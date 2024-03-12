@@ -38,7 +38,7 @@ def playerInput(board):
     global currentPlayer
     while True:
         try:
-            inp = int(input("Verplaatsen naar welk vak? (1-36): "))
+            inp = int(input(f"'{currentPlayer}' Verplaatsen naar welk vak? (1-36): "))
             if 1 <= inp <= 36 and is_valid(board, inp, currentPlayer):
                 break
             else:
