@@ -69,33 +69,30 @@ def is_valid(board, inp, currentPlayer):
 
     old_row, old_col = divmod(oldPos, 6)
     new_row, new_col = divmod(newPos, 6)
-  
-    # Check if the move is horizontally, vertically, or diagonally connected
+
     if (old_row == new_row or old_col == new_col or abs(old_row - new_row) == abs(old_col - new_col)):
-        # Check if the new position is empty and not occupied by the other player
+       
         if board[newPos] == "-" and newPos != otherPos:
-            # Check if the path between oldPos and newPos is clear
-            if old_row == new_row:  # Move is along the same row
-                min_pos = min(oldPos, newPos)
-                max_pos = max(oldPos, newPos)
-                if all(board[pos] == "-" or pos == otherPos for pos in range(min_pos + 1, max_pos)):
-                    return True
-            elif old_col == new_col:  # Move is along the same column
-                min_pos = min(oldPos, newPos)
-                max_pos = max(oldPos, newPos)
-                if all(board[pos] == "-" or pos == otherPos for pos in range(min_pos + 6, max_pos, 6)):
-                    return True
-            else:  # Move is along a diagonal
-                # Determine direction of diagonal movement
-                row_step = -1 if old_row > new_row else 1
-                col_step = -1 if old_col > new_col else 1
-                # Check if the path is clear along the diagonal
+            
+            if old_row == new_row:  
+                step = 1 if oldPos < newPos else -1
+                for pos in range(oldPos + step, newPos, step):
+                    if board[pos] != "-":
+                        return False
+            elif old_col == new_col: 
+                step = 6 if oldPos < newPos else -6
+                for pos in range(oldPos + step, newPos, step):
+                    if board[pos] != "-":
+                        return False
+            else:  
+                row_step = 1 if old_row < new_row else -1
+                col_step = 1 if old_col < new_col else -1
                 check_pos = oldPos + row_step * 6 + col_step
                 while check_pos != newPos:
                     if board[check_pos] != "-":
                         return False
                     check_pos += row_step * 6 + col_step
-                return True
+            return True
     return False
 
 def checkWin(board, currentPlayer):
