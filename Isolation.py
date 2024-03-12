@@ -1,11 +1,3 @@
-# print bord
-
-# invoer speler
-
-# check win/lose/tie
-
-# beurtwissel
-
 board = ["A", "-", "-", "-", "-", "-",
          "-", "-", "-", "-", "-", "-",
          "-", "-", "-", "-", "-", "-",
@@ -99,19 +91,25 @@ def checkWin(board, currentPlayer):
     global posA
     global posB
     if currentPlayer == "A":
-        player_pos = posB
-    else:
         player_pos = posA
+        other_pos = posB
+    else:
+        player_pos = posB
+        other_pos = posA
 
-    # Convert position to row and column indices
-    row, col = divmod(player_pos - 1, 6)
+    row, col = divmod(player_pos, 6)
 
-    # Check if all neighboring positions are occupied
-    for dr in range(-1, 2):
-        for dc in range(-1, 2):
-            if (0 <= row + dr < 6 and 0 <= col + dc < 6 and
-                    (dr != 0 or dc != 0) and board[(row + dr) * 6 + col + dc] == "-"):
+    # Define the offsets to check the surrounding squares
+    offsets = [(i, j) for i in range(-1, 2) for j in range(-1, 2) if (i != 0 or j != 0)]
+
+    # Check if all surrounding squares are occupied
+    for dr, dc in offsets:
+        new_row, new_col = row + dr, col + dc
+        if 0 <= new_row < 6 and 0 <= new_col < 6:
+            pos = new_row * 6 + new_col
+            if board[pos] == "-":
                 return False  # At least one neighboring position is empty
+
     return True  # All neighboring positions are occupied
 
 def switchPlayer():
@@ -124,6 +122,8 @@ def switchPlayer():
 while gameRunning:       
     printBoard(board)
     playerInput(board)
-    checkWin(board, currentPlayer)
+    if (checkWin(board, currentPlayer)):
+        gameRunning = False
+        print(f"{currentPlayer} heeft gewonnen!")
     switchPlayer()
     checkWin(board, currentPlayer)
