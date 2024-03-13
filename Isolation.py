@@ -88,30 +88,37 @@ def is_valid(board, inp, currentPlayer):
     return False
 
 def checkWin(board, currentPlayer):
+    print("Ik ben nu aan het kijken of er een speler gewonnen heeft.")
     global posA
     global posB
-    if currentPlayer == "A":
-        player_pos = posA
-        other_pos = posB
+    global gameRunning
+
+    if (currentPlayer == "A"):
+        pos = posA
     else:
-        player_pos = posB
-        other_pos = posA
+        pos = posB
 
-    row, col = divmod(player_pos, 6)
+    topleft = board[pos - 7]
+    topcenter = board[pos - 6]
+    topright = board[pos - 5]
 
-    # Define the offsets to check the surrounding squares
-    offsets = [(i, j) for i in range(-1, 2) for j in range(-1, 2) if (i != 0 or j != 0)]
+    bottomleft = board [pos + 5]
+    bottomcenter = board[pos + 6]
+    bottomright = board[pos + 7]
 
-    # Check if all surrounding squares are occupied
-    for dr, dc in offsets:
-        new_row, new_col = row + dr, col + dc
-        if 0 <= new_row < 6 and 0 <= new_col < 6:
-            pos = new_row * 6 + new_col
-            if board[pos] == "-":
-                return False  # At least one neighboring position is empty
+    left = board[pos - 1]
+    right = board [pos + 1]
 
-    return True  # All neighboring positions are occupied
-
+# Een lijst van alle posities direct om mij heen. Als minimaal één van deze leeg is "-",
+# dan kan ik nog een zet maken.
+    positions = [topleft, topcenter, topright, bottomleft, bottomcenter, bottomright, left, right]
+    for position in positions:
+        if position == "-":
+            return False
+        else:
+            gameRunning = False
+            return True
+            
 def switchPlayer():
     global currentPlayer
     if (currentPlayer == "A"):
@@ -122,8 +129,7 @@ def switchPlayer():
 while gameRunning:       
     printBoard(board)
     playerInput(board)
-    if (checkWin(board, currentPlayer)):
-        gameRunning = False
-        print(f"{currentPlayer} heeft gewonnen!")
+    checkWin(board, currentPlayer)       
     switchPlayer()
-    checkWin(board, currentPlayer)
+
+print(f"{currentPlayer} heeft gewonnen!")
