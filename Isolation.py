@@ -88,7 +88,7 @@ def is_valid(board, inp, currentPlayer):
     return False
 
 def checkWin(board, currentPlayer):
-    print("Ik ben nu aan het kijken of er een speler gewonnen heeft.")
+    # Uncomment voor debuggen: print("Ik ben nu aan het kijken of er een speler gewonnen heeft.")
     global posA
     global posB
     global gameRunning
