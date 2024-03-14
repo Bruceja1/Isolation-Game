@@ -1,11 +1,3 @@
-# print bord
-
-# invoer speler
-
-# check win/lose/tie
-
-# beurtwissel
-
 board = ["A", "-", "-", "-", "-", "-",
          "-", "-", "-", "-", "-", "-",
          "-", "-", "-", "-", "-", "-",
@@ -38,7 +30,7 @@ def playerInput(board):
     global currentPlayer
     while True:
         try:
-            inp = int(input("Verplaatsen naar welk vak? (1-36): "))
+            inp = int(input(f"'{currentPlayer}' Verplaatsen naar welk vak? (1-36): "))
             if 1 <= inp <= 36 and is_valid(board, inp, currentPlayer):
                 break
             else:
@@ -69,53 +61,65 @@ def is_valid(board, inp, currentPlayer):
 
     old_row, old_col = divmod(oldPos, 6)
     new_row, new_col = divmod(newPos, 6)
-  
-    # Check if the move is horizontally, vertically, or diagonally connected
+
     if (old_row == new_row or old_col == new_col or abs(old_row - new_row) == abs(old_col - new_col)):
-        # Check if the new position is empty and not occupied by the other player
+       
         if board[newPos] == "-" and newPos != otherPos:
-            # Check if the path between oldPos and newPos is clear
-            if old_row == new_row:  # Move is along the same row
-                min_pos = min(oldPos, newPos)
-                max_pos = max(oldPos, newPos)
-                if all(board[pos] == "-" or pos == otherPos for pos in range(min_pos + 1, max_pos)):
-                    return True
-            elif old_col == new_col:  # Move is along the same column
-                min_pos = min(oldPos, newPos)
-                max_pos = max(oldPos, newPos)
-                if all(board[pos] == "-" or pos == otherPos for pos in range(min_pos + 6, max_pos, 6)):
-                    return True
-            else:  # Move is along a diagonal
-                # Determine direction of diagonal movement
-                row_step = -1 if old_row > new_row else 1
-                col_step = -1 if old_col > new_col else 1
-                # Check if the path is clear along the diagonal
+            
+            if old_row == new_row:  
+                step = 1 if oldPos < newPos else -1
+                for pos in range(oldPos + step, newPos, step):
+                    if board[pos] != "-":
+                        return False
+            elif old_col == new_col: 
+                step = 6 if oldPos < newPos else -6
+                for pos in range(oldPos + step, newPos, step):
+                    if board[pos] != "-":
+                        return False
+            else:  
+                row_step = 1 if old_row < new_row else -1
+                col_step = 1 if old_col < new_col else -1
                 check_pos = oldPos + row_step * 6 + col_step
                 while check_pos != newPos:
                     if board[check_pos] != "-":
                         return False
                     check_pos += row_step * 6 + col_step
-                return True
+            return True
     return False
 
 def checkWin(board, currentPlayer):
+    print("Ik ben nu aan het kijken of er een speler gewonnen heeft.")
     global posA
     global posB
-    if currentPlayer == "A":
-        player_pos = posB
+    global gameRunning
+
+    if (currentPlayer == "B"):
+        pos = posA
     else:
-        player_pos = posA
+        pos = posB
 
-    # Convert position to row and column indices
-    row, col = divmod(player_pos - 1, 6)
+    # Bordpositie opsplitsen in een row en col
+    pos_row, pos_col = divmod(pos, 6)
 
-    # Check if all neighboring positions are occupied
-    for dr in range(-1, 2):
-        for dc in range(-1, 2):
-            if (0 <= row + dr < 6 and 0 <= col + dc < 6 and
-                    (dr != 0 or dc != 0) and board[(row + dr) * 6 + col + dc] == "-"):
-                return False  # At least one neighboring position is empty
-    return True  # All neighboring positions are occupied
+    # Omliggende vakjes definiëren
+    surrounding = [      
+        [pos_row, pos_col - 1],         # links
+        [pos_row, pos_col + 1],         # rechts     
+        [pos_row - 1, pos_col],         # boven  
+        [pos_row - 1, pos_col - 1],     # linksboven  
+        [pos_row - 1, pos_col + 1],     # rechtsboven    
+        [pos_row + 1, pos_col],         # beneden      
+        [pos_row + 1, pos_col - 1],     # linksbeneden    
+        [pos_row + 1, pos_col + 1]]     # rechtsbeneden
+    
+    for square in surrounding:
+        row, col = square
+        if row < 0 or row > 5 or col < 0 or col > 5:
+            continue
+        if board[convert(row, col)] == "-":
+            return False
+
+    return True
 
 def switchPlayer():
     global currentPlayer
@@ -124,9 +128,17 @@ def switchPlayer():
     else:
         currentPlayer = "A"
 
+# Een row en col omzetten naar een bordpositie
+def convert(row, col):
+    return row * 6 + col
+
 while gameRunning:       
     printBoard(board)
     playerInput(board)
-    checkWin(board, currentPlayer)
+    if checkWin(board, currentPlayer):
+        break       
     switchPlayer()
-    checkWin(board, currentPlayer)
+    if checkWin(board, currentPlayer):
+        break  
+printBoard(board)
+print(f"{currentPlayer} heeft gewonnen!")
