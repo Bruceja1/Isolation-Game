@@ -1,3 +1,5 @@
+import random
+
 board = ["A", "-", "-", "-", "-", "-",
          "-", "-", "-", "-", "-", "-",
          "-", "-", "-", "-", "-", "-",
@@ -28,10 +30,11 @@ def playerInput(board):
     global posA
     global posB
     global currentPlayer
+
     while True:
         try:
             inp = int(input(f"'{currentPlayer}' Verplaatsen naar welk vak? (1-36): "))
-            if 1 <= inp <= 36 and is_valid(board, inp, currentPlayer):
+            if 1 <= inp <= 36 and isValid(board, inp, currentPlayer):
                 break
             else:
                 print("Ongeldige invoer. Probeer het opnieuw.")
@@ -47,7 +50,7 @@ def playerInput(board):
 
     board[inp - 1] = currentPlayer            
     
-def is_valid(board, inp, currentPlayer):
+def isValid(board, inp, currentPlayer):
     global posA
     global posB
     newPos = inp - 1  
@@ -132,13 +135,26 @@ def switchPlayer():
 def convert(row, col):
     return row * 6 + col
 
+def randomBot(board):
+    global posB
+
+    while currentPlayer == "B":
+        position = random.randint(1, 36)
+        if isValid(board, position, currentPlayer):           
+            board[posB] = "X"
+            posB = position - 1
+            board[position - 1] = currentPlayer
+            switchPlayer()
+
 while gameRunning:       
     printBoard(board)
     playerInput(board)
     if checkWin(board, currentPlayer):
         break       
     switchPlayer()
+    randomBot(board)
     if checkWin(board, currentPlayer):
         break  
+    
 printBoard(board)
 print(f"{currentPlayer} heeft gewonnen!")
