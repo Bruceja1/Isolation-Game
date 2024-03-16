@@ -92,7 +92,6 @@ def isValid(board, inp, currentPlayer):
     return False
 
 def checkWin(board, currentPlayer):
-    # Uncomment voor debuggen: print("Ik ben nu aan het kijken of er een speler gewonnen heeft.")
     global posA
     global posB
     global gameRunning
@@ -152,16 +151,10 @@ def scoreBot(board):
     for square in range(0, len(board)):
         if isValid(board, square + 1, currentPlayer):
             moves.update({square: 0})
-    print(f"Dit zijn de mogelijke moves: {moves}")
     
     # Alle mogelijke zetten simuleren en evalueren op basis van score (vrije buren)
     for move in moves.keys():
-        print(f"Dit is de move waar ik nu naar kijk: {move}")
         board2 = copy.deepcopy(board)
-        print(f"Bord 2 ziet er zo uit:")
-        printBoard(board2)
-        print(f"Bord 1 ziet er zo uit:")
-        printBoard(board)
         score = 0
         board2[move] = currentPlayer
         board2[pos] = "X"
@@ -186,15 +179,11 @@ def scoreBot(board):
 
         moves.update({move: score})
     
-    print(moves)
-
     for move, score in moves.items():
         if score >= maxScore:
             maxMove = move
             maxScore = score
 
-    print(f"Maximale move: {maxMove}")
-    print(f"Maximale score: {maxScore}")
     board[pos] = "X"
     posB = maxMove
     board[maxMove] = currentPlayer
