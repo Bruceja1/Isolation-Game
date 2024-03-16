@@ -1,4 +1,5 @@
 import random
+import copy
 
 board = ["A", "-", "-", "-", "-", "-",
          "-", "-", "-", "-", "-", "-",
@@ -135,6 +136,70 @@ def switchPlayer():
 def convert(row, col):
     return row * 6 + col
 
+def scoreBot(board):
+    global posA
+    global posB
+
+    if currentPlayer == "B":
+        pos = posB 
+    else: 
+        pos = posA
+    moves = {}
+    maxMove = None
+    maxScore = 0
+
+    # Alle mogelijke zetten ophalen
+    for square in range(0, len(board)):
+        if isValid(board, square + 1, currentPlayer):
+            moves.update({square: 0})
+    print(f"Dit zijn de mogelijke moves: {moves}")
+    
+    # Alle mogelijke zetten simuleren en evalueren op basis van score (vrije buren)
+    for move in moves.keys():
+        print(f"Dit is de move waar ik nu naar kijk: {move}")
+        board2 = copy.deepcopy(board)
+        print(f"Bord 2 ziet er zo uit:")
+        printBoard(board2)
+        print(f"Bord 1 ziet er zo uit:")
+        printBoard(board)
+        score = 0
+        board2[move] = currentPlayer
+        board2[pos] = "X"
+
+        # Bordpositie opsplitsen in een row en col
+        move_row, move_col = divmod(move, 6)
+
+        neighbors = [      
+            [move_row, move_col - 1],         # links
+            [move_row, move_col + 1],         # rechts     
+            [move_row - 1, move_col],         # boven  
+            [move_row - 1, move_col - 1],     # linksboven  
+            [move_row - 1, move_col + 1],     # rechtsboven    
+            [move_row + 1, move_col],         # beneden      
+            [move_row + 1, move_col - 1],     # linksbeneden    
+            [move_row + 1, move_col + 1]]     # rechtsbeneden
+
+        for neighbor in neighbors:
+            if 0 <= neighbor[0] < 6 and 0 <= neighbor[1] < 6:
+                if board2[convert(neighbor[0], neighbor[1])] == "-":
+                    score += 1
+
+        moves.update({move: score})
+    
+    print(moves)
+
+    for move, score in moves.items():
+        if score >= maxScore:
+            maxMove = move
+            maxScore = score
+
+    print(f"Maximale move: {maxMove}")
+    print(f"Maximale score: {maxScore}")
+    board[pos] = "X"
+    posB = maxMove
+    board[maxMove] = currentPlayer
+    switchPlayer()
+
 def randomBot(board):
     global posB
 
@@ -152,7 +217,9 @@ while gameRunning:
     if checkWin(board, currentPlayer):
         break       
     switchPlayer()
-    randomBot(board)
+    if checkWin(board, currentPlayer):
+        break
+    scoreBot(board)
     if checkWin(board, currentPlayer):
         break  
     
