@@ -135,6 +135,7 @@ def switchPlayer():
 def convert(row, col):
     return row * 6 + col
 
+# Computerspeler die de zet kiest waarbij er zo veel mogelijk vrije hokjes om zichzelf zijn.
 def scoreBot(board):
     global posA
     global posB
@@ -208,7 +209,7 @@ while gameRunning:
     switchPlayer()
     if checkWin(board, currentPlayer):
         break
-    scoreBot(board)
+    scoreBot(board) # Vervang met randomBot(board) om tegen een bot te spelen die willekeurige zetten maakt.
     if checkWin(board, currentPlayer):
         break  
     
